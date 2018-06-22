@@ -1,0 +1,17 @@
+{
+  "name": "normalize",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel ./src/index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "create-file": "^1.0.1",
+    "normalizr": "^3.2.4",
+    "parcel-bundler": "^1.9.2"
+  }
+}
