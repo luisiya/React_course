@@ -1,33 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import styles from './SaveSquadsState.css';
 
-const ReadySquadState = ({savedSquad, deleteSquad}) => (
+const SaveSquadsState = ({saveSquads, deleteSquad}) => (
 
   <div className="readySquad" style={{textAlign: 'center', display: 'flex', margin: '20px 0 0 0'}}>
-    {savedSquad.length > 0 ?
+    {saveSquads.length > 0 ?
 
       <div>
 
-        {savedSquad.map(user => (
+        {saveSquads.map(user => (
             <div key={user.id} style={{display: 'flex', margin: '0 0 20px 0 ', fontSize: '14px'}}>
 
               <ul style={{width: '142px'}}>
-                <button onClick={() => deleteSquad(user.id)}
-
-                        style={{
-                          width: '22px',
-                          height: '15px',
-                          border: 'none',
-                          boxShadow:'darkseagreen 0px 2px 2px',
-                          backgroundColor: 'white',
-                          color: 'lightcoral',
-                          margin: '0 0 0 180px',
-                          fontSize: '14px',
-                          lineHeight: '5px',
-                          hover:'color:green'
-
-                        }}>&#10006;</button>
+                <button className={styles.deleteSquad} onClick={() => deleteSquad(user.id)}>&#10006;</button>
                 <h4 style={{ color:'grey'}}>stats:</h4>
                 <li style={{listStyleType: 'none'}}>strength: {user.stats.str} </li>
                 <li style={{listStyleType: 'none'}}>speed: {user.stats.spd} </li>
@@ -51,10 +38,10 @@ const ReadySquadState = ({savedSquad, deleteSquad}) => (
   </div>
 );
 
-ReadySquadState.propTypes = {
+SaveSquadsState.propTypes = {
 
 
-  savedSquad: PropTypes.arrayOf(
+  saveSquads: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
     }).isRequired,
@@ -63,4 +50,4 @@ ReadySquadState.propTypes = {
   deleteSquad: PropTypes.func.isRequired
 };
 
-export default ReadySquadState;
+export default SaveSquadsState;

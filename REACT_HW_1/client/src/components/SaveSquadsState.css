@@ -1,0 +1,15 @@
+.deleteSquad{
+width: 22px;
+  height: 15px;
+  border: none;
+  box-shadow:darkseagreen 0px 2px 2px;
+  background-color: white;
+  color: lightcoral;
+  margin: 0 0 0 180px;
+  font-size: 14px;
+  line-height:5px;
+
+}
+.deleteSquad:hover{
+  color:green;
+}

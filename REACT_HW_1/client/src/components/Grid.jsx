@@ -20,9 +20,7 @@ const Grid = ({children}) => {
 
 Grid.propTypes = {
   children: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-    }).isRequired,
+    PropTypes.shape().isRequired,
   ).isRequired,
 
 

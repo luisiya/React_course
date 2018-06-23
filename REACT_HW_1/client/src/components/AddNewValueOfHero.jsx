@@ -15,49 +15,48 @@ export default class AddNewValueOfHero extends Component {
   };
   state = {
     name:"",
-    strength: "",
-    intelligence: "",
-    speed: "",
+    strength: 0,
+    intelligence: 0,
+    speed: 0,
      };
 
-  addNewHero = (e) =>{
-    this.setState({name: e.target.value})
+
+  handleInputChange = ({ target }) => {
+    switch (target.name){
+      case 'name':
+        this.setState({ [target.name]: target.value });
+        break;
+      default:
+        this.setState({ [target.name]: Number(target.value) });
+        break;
+    }
   };
 
-  addNewStrength = (e) =>{
-      this.setState({strength:e.target.value});
-  };
-
-  addNewIntelligence =(e) =>{
-     this.setState({intelligence:e.target.value});
-  };
-
-  addNewSpeed =(e)=>{
-      this.setState({speed:e.target.value});
-  };
 
   handleSubmit=(event)=>{
     event.preventDefault();
     this.setState({
       name: "",
-      strength:"",
-      intelligence:"",
-      speed:""
+      strength:0,
+      intelligence:0,
+      speed:0
     });
     this.props.addNewHero(this.state);
+
 
   };
 
   render() {
+
     return (
       <form className={styles.form} onSubmit={this.handleSubmit} >
         <div>
-        <Input value={this.state.name} name="text" placeholder="New hero..." onChange={this.addNewHero}/>
+        <Input value={this.state.name} name="name" placeholder="New hero..." onChange={this.handleInputChange}/>
         </div>
         <div>
-          <CreateSelectOptions value={this.state.strength}  number={10} placeholder="Strength" onChange={this.addNewStrength}/>
-          <CreateSelectOptions value={this.state.intelligence}  number={10} placeholder="Intelligence" onChange={this.addNewIntelligence} />
-          <CreateSelectOptions value={this.state.speed}  number={10} placeholder="Speed" onChange={this.addNewSpeed}/>
+          <CreateSelectOptions value={this.state.strength}  name ="strength" number={10} label="Strength" onChange={this.handleInputChange}/>
+          <CreateSelectOptions value={this.state.intelligence}  name ="intelligence" number={10} label="Intelligence" onChange={this.handleInputChange} />
+          <CreateSelectOptions value={this.state.speed}  name ="speed" number={10} label="Speed" onChange={this.handleInputChange}/>
         </div>
         <div className={styles.actions} style={{ margin: '20px 0 0 0' }}>
         <Button type="submit" text="Add hero"  />

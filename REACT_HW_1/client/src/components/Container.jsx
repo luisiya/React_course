@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Container =({width = 1170, children}) => (
+const Container =({width, children}) => (
   <div style={{maxWidth: width, margin:'0 auto'}}>{children}</div>
 );
 
 Container.propTypes = {
-  children: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-    }).isRequired,
-  ).isRequired,
+  children: PropTypes.shape().isRequired,
 
-  width: PropTypes.number.isRequired
+
+  width: PropTypes.number,
 };
+Container.defaultProps = {
+  width: 1170,
+}
 export default Container;

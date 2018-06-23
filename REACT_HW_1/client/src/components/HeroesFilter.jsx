@@ -1,31 +1,33 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Input from './shared/Input';
 import styles from './HeroesFilter.css';
 
-export default class HeroesFilter extends Component {
-  static propTypes = {
-    filter: PropTypes.string.isRequired,
-    onFilterChange: PropTypes.func.isRequired,
+const HeroesFilter = ({ filter, onFilterChange }) => {
+
+  const handleChange = e => {
+
+    onFilterChange(e.target.value);
   };
-
-  handleChange = e => {
-
-    this.props.onFilterChange(e.target.value);
-  };
-
-  render() {
-    const { filter } = this.props;
 
     return (
       <form className={styles.form}>
         <Input
           name="name"
           value={filter}
-          onChange={this.handleChange}
+          onChange={handleChange}
           placeholder="Filter by heroes..."
         />
       </form>
     );
-  }
+
 }
+
+
+HeroesFilter.propTypes = {
+  filter: PropTypes.string.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
+
+};
+
+export default HeroesFilter;

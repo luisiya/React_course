@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 
-const CalculateHeroStats = ({users, idFromSquad}) => (
+const CalculateHeroStats = ({heroes, squadIds}) => (
 
   <div className="TotalInfo">
 
@@ -10,22 +10,22 @@ const CalculateHeroStats = ({users, idFromSquad}) => (
 
       strength :
 
-      {idFromSquad.length > 0 ?
-        users.filter(user => idFromSquad.includes(user.id)).reduce(
+      {squadIds.length > 0 ?
+        heroes.filter(user => squadIds.includes(user.id)).reduce(
           (totals, p) => (Number(totals) + Number(p.strength)),
           0) : 0}
     </p>
     <p style={{textAlign: 'center'}}>
       intelligence : {
-      idFromSquad.length > 0 ?
-        users.filter(user => idFromSquad.includes(user.id)).reduce(
+      squadIds.length > 0 ?
+        heroes.filter(user => squadIds.includes(user.id)).reduce(
           (totals, p) => (Number(totals) + Number(p.intelligence) ),
           0) : 0}
     </p>
     <p style={{textAlign: 'center'}}>
       speed : {
-      idFromSquad.length > 0 ?
-        users.filter(user => idFromSquad.includes(user.id)).reduce(
+      squadIds.length > 0 ?
+        heroes.filter(user => squadIds.includes(user.id)).reduce(
           (totals, p) => (Number(totals) + Number(p.speed) ),
           0) : 0}
     </p>
@@ -34,12 +34,12 @@ const CalculateHeroStats = ({users, idFromSquad}) => (
 
 CalculateHeroStats.propTypes = {
 
-  users: PropTypes.arrayOf(
+  heroes: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
     }).isRequired,
   ).isRequired,
-  idFromSquad: PropTypes.arrayOf(
+  squadIds: PropTypes.arrayOf(
     PropTypes.number).isRequired,
 
 };

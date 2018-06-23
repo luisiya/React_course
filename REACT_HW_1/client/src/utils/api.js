@@ -85,7 +85,7 @@ export const deleteSquad = id =>
 
 
 
-export const AddToSquad = hero =>
+export const saveSquad = hero =>
   axios
     .post('/api/squads', hero)
     .then(response =>

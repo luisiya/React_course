@@ -4,13 +4,15 @@
 .input {
   display: inline-flex;
   flex-grow: 1;
-  margin-right: 16px;
+  margin-right: 29px;
+  margin-bottom: 20px;
   font-size: 16px;
   font-family: inherit;
   outline: 0;
   padding: 4px;
   border: none;
   border-bottom: 1px solid primary-dark-color;
+  width:245px;
 }
 
 .input::placeholder {

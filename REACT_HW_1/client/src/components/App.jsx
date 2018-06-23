@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {hot} from 'react-hot-loader';
 import Loader from './shared/Loader';
-import {getVisibleHeroes, getVisibleSquad} from '../utils/selectors';
+import {getVisibleHeroes, getSquadHeroes, getSquadsStats} from '../utils/selectors';
 import * as api from '../utils/api';
 import HeroesList from './HeroesList';
 import InlineMessage from './InlineMessage';
@@ -9,52 +9,44 @@ import HeroesFilter from './HeroesFilter';
 import CalculateHeroStats from './CalculateHeroStats';
 import Button from './shared/Button';
 import AddNewValueOfHero from './AddNewValueOfHero';
-import SavedSquadState from './SavedSquadState';
+import SaveSquadsState from './SaveSquadsState';
 import Container from './Container';
 import Grid from './Grid';
 
 class App extends Component {
 
   state = {
-    users: [],
+    heroes: [],
     filter: "",
     isLoading: false,
-    idFromSquad: [],
-    readySquad: [],
-    savedSquad: [],
-    idFromList: [],
+    squadIds: [],
+    saveSquads: [],
   };
 
   componentDidMount() {
-    this.getUserFromData();
+     this.getIninalData();
   };
-  onFilterChange = (str) => {
-    this.setState({filter: str.charAt(0).toUpperCase() + str.slice(1)});
-  };
-  getUserFromData = () => {
-    this.setState({isLoading: true});
-    api.getUserFromData().then(({data, error}) => {
-      if (error) {
-        console.log(error);
-        this.setState({isLoading: false});
-        return;
-      }
-      this.setState({users: data, isLoading: false}, this.getDataFromSquads);
-    });
-  };
-  getDataFromSquads = () => {
-    this.setState({isLoading: true});
-    api.getDataFromSquads().then(({data, error}) => {
-      if (error) {
-        console.log(error);
-        this.setState({isLoading: false});
-        return;
-      }
-      this.setState({savedSquad: data, isLoading: false});
-    });
-  };
-  addNewHero = (hero) => {
 
+  onFilterChange = (filter) => {
+    this.setState({filter});
+  };
+
+  getIninalData = () => {
+    this.setState({isLoading: true});
+    const heroPropmise =  api.getUserFromData();
+    const squadsPromise =  api.getDataFromSquads();
+        Promise.all([heroPropmise,squadsPromise]).then(
+      ([{ data: allHeroes }, { data: squads }]) => {
+        this.setState({
+          heroes: allHeroes,
+          saveSquads: squads,
+          isLoading: false,
+        });
+      }
+    );
+  };
+
+  addNewHero = (hero) => {
     this.setState({isLoading: true});
     api.addNewHero(hero).then(({data, error}) => {
       if (error) {
@@ -63,25 +55,20 @@ class App extends Component {
         return;
       }
       this.setState(state => ({
-        users: [...state.users, data],
+        heroes: [...state.heroes, data],
         isLoading: false,
       }));
-
     });
-
   };
+
   addToSquad = (id) => {
 
-
-    const hero = this.state.users.filter(user => user.id === id)[0];
     this.setState(state => ({
-      idFromSquad: [...state.idFromSquad, id],
-      idFromList: [...state.idFromSquad, id],
-      readySquad: [...state.readySquad, hero],
-    }));
+      squadIds: [...state.squadIds, id],
+         }));
   };
-  deleteHeroFromList = (id) => {
 
+  deleteHeroFromList = (id) => {
     this.setState({isLoading: true});
     api.deleteHero(id).then(({error}) => {
       if (error) {
@@ -90,29 +77,26 @@ class App extends Component {
         return;
       }
       this.setState(state => ({
-        users: state.users.filter(hero => hero.id !== id),
+        heroes: state.heroes.filter(hero => hero.id !== id),
         isLoading: false,
       }));
     });
   };
-  deleteHeroFromSquad = (id) => {
 
+  deleteHeroFromSquad = (id) => {
     this.setState(state => ({
-      idFromSquad: state.idFromSquad.filter(user => user !== id),
-      idFromList: state.idFromList.filter(hero => hero !== id),
+      squadIds: state.squadIds.filter(user => user !== id),
     }));
   };
-  savedSquad = () => {
 
-    const hero = {};
-    const readySquad = this.state.readySquad;
-    hero.heroes = readySquad;
-    hero.stats = {};
-    hero.stats.str = readySquad.reduce((totals, p) => (totals + p.strength), 0);
-    hero.stats.int = readySquad.reduce((totals, p) => (totals + p.intelligence), 0);
-    hero.stats.spd = readySquad.reduce((totals, p) => (totals + p.speed), 0);
+  saveSquads = () => {
+    const {heroes, squadIds} = this.state;
+    const squad = {};
+    const squadHeroes = getSquadHeroes(heroes, squadIds);
+    squad.heroes = squadHeroes;
+    squad.stats = getSquadsStats(squadHeroes);
 
-    api.AddToSquad(hero).then(({data, error}) => {
+    api.saveSquad(squad).then(({data, error}) => {
       if (error) {
         console.log(error);
         this.setState({isLoading: false});
@@ -120,17 +104,15 @@ class App extends Component {
       }
 
       this.setState(state => ({
-        idFromSquad: [],
-        users: state.users.filter(user => state.idFromList.indexOf(user.id) === -1),
-        savedSquad: [...state.savedSquad, data],
+        squadIds: [],
+        heroes: state.heroes.filter(user => state.squadIds.indexOf(user.id) === -1),
+        saveSquads: [...state.saveSquads, data],
         isLoading: false,
       }));
-
     });
-
   };
-  deleteSquad = (id) => {
 
+  deleteSquad = (id) => {
     this.setState({isLoading: true});
     api.deleteSquad(id).then(({error}) => {
       if (error) {
@@ -139,27 +121,23 @@ class App extends Component {
         return;
       }
       this.setState(state => ({
-        savedSquad: state.savedSquad.filter(hero => hero.id !== id),
+        saveSquads: state.saveSquads.filter(hero => hero.id !== id),
         isLoading: false,
       }));
     });
   };
-  ResetSquad = () => {
+
+  resetSquad = () => {
     this.setState({
-
-      idFromSquad: [],
-      idFromList: [],
-
+      squadIds: [],
     });
   };
 
-
-
   render() {
 
-    const {users, isLoading, filter, edit, idFromSquad, savedSquad, idFromList} = this.state;
-    const visibleHeroes = getVisibleHeroes(users, filter, idFromList);
-    const visibleSquad = getVisibleSquad(users, idFromSquad);
+    const {heroes, isLoading, filter, squadIds, saveSquads} = this.state;
+    const visibleHeroes = getVisibleHeroes(heroes, filter,squadIds );
+    const visibleSquad = getSquadHeroes(heroes, squadIds);
 
     return (
       <Container>
@@ -172,36 +150,36 @@ class App extends Component {
           <div className="listOfHeroes">
             <h2 style={{textAlign: 'center'}}>Heroes</h2>
             {isLoading && <Loader width={80} height={80}/>}
-            <HeroesFilter onFilterChange={this.onFilterChange} filter={filter} value={edit}/>
-            {users.length > 0 ? (
+            <HeroesFilter onFilterChange={this.onFilterChange} filter={filter} />
+            {heroes.length > 0 ? (
               <HeroesList
-                users={visibleHeroes}
+                heroes={visibleHeroes}
                 deleteHero={this.deleteHeroFromList}
                 addToSquad={this.addToSquad}
               />
             ) : (
 
-              <InlineMessage text="You have zero users"/>
+              <InlineMessage text="You have zero heroes"/>
             )}
           </div>
 
           <div className="Squad_editor" style={{margin: '0 0 0 10px'}}>
             <h2 style={{textAlign: 'center'}}>Squad editor</h2>
-            <Button type="submit" onClick={this.savedSquad} text="Save Squad"/>
-            <Button type="submit" onClick={this.ResetSquad} text="Reset"/>
+            <Button type="submit" onClick={this.saveSquads} text="Save Squad"/>
+            <Button type="submit" onClick={this.resetSquad} text="Reset"/>
 
             {isLoading && <Loader width={80} height={80}/>}
-            {users.length > 0 ? (
+            {heroes.length > 0 ? (
               <div>
-                <CalculateHeroStats users={users} idFromSquad={idFromSquad}/>
-                <HeroesList value="true"
-                            users={visibleSquad}
+                <CalculateHeroStats heroes={heroes} squadIds={squadIds}/>
+                <HeroesList addIcon="true"
+                            heroes={visibleSquad}
                             deleteHero={this.deleteHeroFromSquad}
                 />
               </div>
 
             ) : (
-              <InlineMessage text="You have zero users"/>
+              <InlineMessage text="You have zero heroes"/>
             )}
 
           </div>
@@ -209,7 +187,7 @@ class App extends Component {
           <div className="Squad_stats">
             <h2 style={{textAlign: 'center'}}>Saved squad</h2>
             {isLoading && <Loader width={80} height={80}/>}
-            <SavedSquadState savedSquad={savedSquad}
+            <SaveSquadsState saveSquads={saveSquads}
                              deleteSquad={this.deleteSquad}
             />
           </div>
